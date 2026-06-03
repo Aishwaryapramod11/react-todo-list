@@ -6,14 +6,21 @@ function App() {
   const [task, setTask] = useState("");
 
   const [tasks, setTasks] = useState([]);
+
   const [filter, setFilter] = useState("all");
 
+
+  // Add Task
   const addTask = () => {
 
     if(task.trim() === "") return;
 
     const newTask = {
+
+      id: Date.now(),
+
       text: task,
+
       completed: false
     };
 
@@ -22,35 +29,58 @@ function App() {
     setTask("");
   };
 
-  const deleteTask = (index) => {
+
+  // Delete Task
+  const deleteTask = (id) => {
 
     const updatedTasks =
-      tasks.filter((_, i) => i !== index);
+      tasks.filter(
+        (task) => task.id !== id
+      );
 
     setTasks(updatedTasks);
   };
 
-  const toggleComplete = (index) => {
 
-    const updatedTasks = [...tasks];
+  // Toggle Complete
+  const toggleComplete = (id) => {
 
-    updatedTasks[index].completed =
-      !updatedTasks[index].completed;
+    const updatedTasks =
+      tasks.map((task) => {
+
+        if(task.id === id){
+
+          return {
+
+            ...task,
+
+            completed: !task.completed
+          };
+        }
+
+        return task;
+      });
 
     setTasks(updatedTasks);
   };
-  const filteredTasks = tasks.filter((t) => {
 
-  if(filter === "completed"){
-    return t.completed;
-  }
 
-  if(filter === "pending"){
-    return !t.completed;
-  }
+  // Filter Logic
+  const filteredTasks =
+    tasks.filter((t) => {
 
-  return true;
-});
+      if(filter === "completed"){
+        return t.completed;
+      }
+
+      if(filter === "pending"){
+        return !t.completed;
+      }
+
+      return true;
+    });
+
+
   return (
 
     <div className="container">
@@ -59,23 +89,33 @@ function App() {
 
         <h1>📝 My To-Do List</h1>
 
-        <p>Stay organized. Get things done.</p>
+        <p>
+          Stay organized. Get things done.
+        </p>
 
         <div className="line"></div>
 
       </div>
 
+
+      {/* Input Section */}
       <div className="input-section">
 
         <input
           type="text"
+
           placeholder="Enter a new task..."
+
           value={task}
-          onChange={(e) => setTask(e.target.value)}
+
+          onChange={(e) =>
+            setTask(e.target.value)
+          }
         />
 
         <button
           className="add-btn"
+
           onClick={addTask}
         >
           Add Task +
@@ -83,62 +123,81 @@ function App() {
 
       </div>
 
+
+      {/* Filter Buttons */}
       <div className="filter-section">
 
-  <button
-    className={
-      filter === "all"
-      ? "filter-btn active"
-      : "filter-btn"
-    }
+        <button
+          className={
+            filter === "all"
+            ? "filter-btn active"
+            : "filter-btn"
+          }
 
-    onClick={() => setFilter("all")}
-  >
-    All ({tasks.length})
-  </button>
+          onClick={() =>
+            setFilter("all")
+          }
+        >
+          All ({tasks.length})
+        </button>
 
-  <button
-    className={
-      filter === "completed"
-      ? "filter-btn active"
-      : "filter-btn"
-    }
 
-    onClick={() => setFilter("completed")}
-  >
-    Completed (
-    {
-      tasks.filter(t => t.completed).length
-    }
-    )
-  </button>
+        <button
+          className={
+            filter === "completed"
+            ? "filter-btn active"
+            : "filter-btn"
+          }
 
-  <button
-    className={
-      filter === "pending"
-      ? "filter-btn active"
-      : "filter-btn"
-    }
+          onClick={() =>
+            setFilter("completed")
+          }
+        >
+          Completed (
+          {
+            tasks.filter(
+              t => t.completed
+            ).length
+          }
+          )
+        </button>
 
-    onClick={() => setFilter("pending")}
-  >
-    Pending (
-    {
-      tasks.filter(t => !t.completed).length
-    }
-    )
-  </button>
 
-</div>
+        <button
+          className={
+            filter === "pending"
+            ? "filter-btn active"
+            : "filter-btn"
+          }
 
+          onClick={() =>
+            setFilter("pending")
+          }
+        >
+          Pending (
+          {
+            tasks.filter(
+              t => !t.completed
+            ).length
+          }
+          )
+        </button>
+
+      </div>
+
+
+      {/* Task List */}
       <ul>
 
-        {filteredTasks.map((t, index) => (
+        {filteredTasks.map((t) => (
 
           <li
-            key={index}
+            key={t.id}
+
             className={
-              t.completed ? "completed-task" : ""
+              t.completed
+              ? "completed-task"
+              : ""
             }
           >
 
@@ -146,11 +205,14 @@ function App() {
 
               <input
                 type="checkbox"
+
                 checked={t.completed}
+
                 onChange={() =>
-                  toggleComplete(index)
+                  toggleComplete(t.id)
                 }
               />
+
 
               <div>
 
@@ -170,10 +232,12 @@ function App() {
 
             </div>
 
+
             <button
               className="delete-btn"
+
               onClick={() =>
-                deleteTask(index)
+                deleteTask(t.id)
               }
             >
               🗑
