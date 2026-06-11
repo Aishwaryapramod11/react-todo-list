@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: react-todo-list
+    runtime: static
+    buildCommand: npm run build
+    publishPath: build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
