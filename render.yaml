@@ -1,7 +1,6 @@
 services:
-  - type: web
+  - type: static
     name: react-todo-list
-    runtime: static
     buildCommand: npm run build
     publishPath: build
     routes:
